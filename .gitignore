@@ -1,0 +1,9 @@
+# App
+*.pyc
+.vagrant/
+downloads/
+
+# OS or program files
+.DS_store
+Thumbs.db
+.Trashes
