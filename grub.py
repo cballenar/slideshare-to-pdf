@@ -115,7 +115,7 @@ for i, image in enumerate(images, start=1):
 if args.verbose:
     print('Converting to PDF...')
 
-downloaded_slides_str = ' '.join(downloaded_slides)
+downloaded_slides_str = ' '.join(sorted(downloaded_slides))
 try:
     subprocess.call('convert {} -quality 100 {}'.format(downloaded_slides_str,  output_path), shell=True)
 except Exception, e:
