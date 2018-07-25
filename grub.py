@@ -96,7 +96,7 @@ downloaded_slides = []
 for i, image in enumerate(images, start=1):
     # form slides data
     remote_slide = image[slide_resolution]
-    local_slide = os.path.join(dir_tmp, 'slide-{}.jpg'.format(str(i)))
+    local_slide = os.path.join(dir_tmp, 'slide-{:03}.jpg'.format(i))
 
     # download slide
     if args.verbose:
