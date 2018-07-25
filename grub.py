@@ -7,11 +7,12 @@ import lxml
 import errno
 import socket
 import shutil
-import urllib
+from six.moves import urllib
 import argparse
 import requests
 import tempfile
 import subprocess
+from six.moves import input
 from bs4 import BeautifulSoup
 
 # set default output file name and directory
@@ -32,7 +33,7 @@ args = parser.parse_args()
 if args.input:
     url = args.input
 else:
-    url = raw_input('Input the SlideShare URL you want to convert: ')
+    url = input('Input the SlideShare URL you want to convert: ')
 
 # if output was specified, split path into file name and directory
 if args.output:
@@ -71,7 +72,7 @@ images = None
 try:
     html = requests.get(url)
     html.raise_for_status()
-except Exception, e:
+except Exception as e:
     # terminate script
     sys.exit('Could not download {}. {}'.format(url, e))
 else:
@@ -95,15 +96,15 @@ downloaded_slides = []
 for i, image in enumerate(images, start=1):
     # form slides data
     remote_slide = image[slide_resolution]
-    local_slide = os.path.join(dir_tmp, 'slide-{}.jpg'.format(str(i)))
+    local_slide = os.path.join(dir_tmp, 'slide-{:03}.jpg'.format(i))
 
     # download slide
     if args.verbose:
         print('Downloading slide {}...'.format(str(i)))
 
     try:
-        urllib.urlretrieve(remote_slide, filename=local_slide)
-    except Exception, e:
+        urllib.request.urlretrieve(remote_slide, filename=local_slide)
+    except Exception as e:
         # cleanup and terminate
         shutil.rmtree(dir_tmp)
         sys.exit('Could not download slide-{}. {}'.format(str(i), e))
@@ -117,8 +118,8 @@ if args.verbose:
 
 downloaded_slides_str = ' '.join(sorted(downloaded_slides))
 try:
-    subprocess.call('convert {} -quality 100 {}'.format(downloaded_slides_str,  output_path), shell=True)
-except Exception, e:
+    subprocess.call('magick {} -quality 100 {}'.format(downloaded_slides_str,  output_path), shell=True)
+except Exception as e:
     sys.exit('Could not convert slides to PDF. {}'.format(str(i), e))
 
 # remove tmp directory
@@ -127,7 +128,7 @@ shutil.rmtree(dir_tmp)
 # check if file was created
 if os.path.isfile(output_path):
     if args.verbose:
-        print 'Your file has been successfully created at {}'.format(output_path)
+        print('Your file has been successfully created at {}'.format(output_path))
 
     sys.exit(0)
 else:
