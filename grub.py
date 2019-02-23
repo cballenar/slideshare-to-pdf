@@ -119,7 +119,7 @@ downloaded_slides_str = ' '.join(sorted(downloaded_slides))
 try:
     subprocess.call('convert {} -quality 100 {}'.format(downloaded_slides_str,  output_path), shell=True)
 except Exception, e:
-    sys.exit('Could not convert slides to PDF. {}'.format(str(i), e))
+    sys.exit('Could not convert slides to PDF. {}'.format(e))
 
 # remove tmp directory
 shutil.rmtree(dir_tmp)
