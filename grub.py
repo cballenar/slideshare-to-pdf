@@ -142,7 +142,7 @@ shutil.rmtree(dir_tmp)
 # check if file was created
 if os.path.isfile(output_path):
     if args.verbose:
-        print 'Your file has been successfully created at {}'.format(output_path)
+        print('Your file has been successfully created at {}'.format(output_path))
 
     sys.exit(0)
 else:
