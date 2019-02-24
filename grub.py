@@ -13,6 +13,7 @@ import requests
 import tempfile
 import subprocess
 from bs4 import BeautifulSoup
+import distutils.spawn
 
 # set default output file name and directory
 output_file = ''
@@ -27,6 +28,7 @@ parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', defau
 parser.add_argument('-i', '--input', help='SlideShare URL to be processed, e.g.: "http://www.slideshare.net/korlayashwanth/download-disabled-slide-share-ppts-by-authors"')
 parser.add_argument('-o', '--output', help='Path where to save the file. It can be a folder or especific file. e.g.: "\\Users\\user\\Desktop\\my-slides.pdf" OR "\\Users\\user\\Desktop\\". Default: "./downloads/slide-name.pdf".')
 parser.add_argument('-j', '--jpg', action='store_true', default=False, help='Leave intermediate jpg files. Automatically delete and overwrite old files without prompting for confirmation.')
+parser.add_argument('--use_convert', action='store_true', default=False, help='Use \'convert\' command to generate pdf')
 args = parser.parse_args()
 
 # get input
@@ -118,7 +120,13 @@ if args.verbose:
 
 downloaded_slides_str = ' '.join(sorted(downloaded_slides))
 try:
-    subprocess.call('convert {} -quality 100 {}'.format(downloaded_slides_str,  output_path), shell=True)
+    imagick = 'convert'
+    if not args.use_convert:
+        # detection of magick command
+        if distutils.spawn.find_executable('magick'):
+            imagick = 'magick'
+            print('\'magick\' is to be used. If \'convert\' is correct one, please set --use_convert') if args.verbose else None
+    subprocess.call('{} {} -quality 100 {}'.format(imagick, downloaded_slides_str,  output_path), shell=True)
 except Exception, e:
     sys.exit('Could not convert slides to PDF. {}'.format(e))
 
