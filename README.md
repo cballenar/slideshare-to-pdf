@@ -39,21 +39,23 @@ Your file has been successfully created at downloads/[SLIDE NAME].pdf
 
 ### Run it with Arguments
 
-#### Input
+```
+./grub.py [-i|--input <url>] [-o|--output <path>] [-j|--jpg] [--use_convert] [-q|--quiet]
+```
 
+#### Input
 Specify the SlideShare URL you'd like to download with `-i`.
 
 ````
-./grub.py -i [SLIDESHARE URL]
+./grub.py -i <SLIDESHARE URL>
 ````
 
 
 #### Output
-
 You can specify where to save your PDF with `-o`. The script will accept a directory or a file path. If only the directory path is specified, the name of the slide will be used.
 
 ````
-./grub.py -o [FOLDER OR FILE PATH]
+./grub.py -o <FOLDER OR FILE PATH>
 
 # save in directory
 ./grub.py -i [...] -o /home/user/documents/
@@ -61,6 +63,21 @@ You can specify where to save your PDF with `-o`. The script will accept a direc
 # save to file
 ./grub.py -i [...] -o /home/user/documents/my-slide.pdf
 ````
+
+
+#### Keep JPGs
+You can request to keep the JPG files using `-j` or `--jpg`. This will export the PDF file and also a directory with all the JPG files that make up the PDF.
+
+````
+/my-slides-by-author.pdf
+/my-slides-by-author/01.jpg
+/my-slides-by-author/02.jpg
+/my-slides-by-author/03.jpg
+...
+````
+
+#### Force use of `convert`
+The script will automatically detect if the command `magick` is available and use it by default. If you require the use of `convert` instead use `--use_convert`
 
 
 #### Quiet
@@ -81,3 +98,6 @@ Show help message and exit.
 
 ## Development
 This repository includes a Vagrantfile. If you'd like to collaborate, this should help jumpstart the development process.
+
+## Contributors
+- [tdrk1980](https://github.com/tdrk1980)
