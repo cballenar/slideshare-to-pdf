@@ -13,6 +13,7 @@ import requests
 import tempfile
 import subprocess
 from bs4 import BeautifulSoup
+import distutils.spawn
 
 # set default output file name and directory
 output_file = ''
@@ -26,6 +27,8 @@ parser = argparse.ArgumentParser(description='A python script to help you back u
 parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True, help='Don\'t print status messages to stdout.')
 parser.add_argument('-i', '--input', help='SlideShare URL to be processed, e.g.: "http://www.slideshare.net/korlayashwanth/download-disabled-slide-share-ppts-by-authors"')
 parser.add_argument('-o', '--output', help='Path where to save the file. It can be a folder or especific file. e.g.: "\\Users\\user\\Desktop\\my-slides.pdf" OR "\\Users\\user\\Desktop\\". Default: "./downloads/slide-name.pdf".')
+parser.add_argument('-j', '--jpg', action='store_true', default=False, help='Leave intermediate jpg files. Automatically delete and overwrite old files without prompting for confirmation.')
+parser.add_argument('--use_convert', action='store_true', default=False, help='Use \'convert\' command to generate pdf')
 args = parser.parse_args()
 
 # get input
@@ -117,9 +120,29 @@ if args.verbose:
 
 downloaded_slides_str = ' '.join(sorted(downloaded_slides))
 try:
-    subprocess.call('convert {} -quality 100 {}'.format(downloaded_slides_str,  output_path), shell=True)
+    imagick = 'convert'
+    if not args.use_convert:
+        # detection of magick command
+        if distutils.spawn.find_executable('magick'):
+            imagick = 'magick'
+            print('\'magick\' is to be used. If \'convert\' is correct one, please set --use_convert') if args.verbose else None
+    subprocess.call('{} {} -quality 100 {}'.format(imagick, downloaded_slides_str,  output_path), shell=True)
 except Exception, e:
     sys.exit('Could not convert slides to PDF. {}'.format(e))
+
+# copy jpg files if requested
+if args.jpg:
+    dir_jpg = os.path.join(output_dir, os.path.splitext(output_file)[0])
+    if os.path.exists(dir_jpg):
+        print('Delete old folder {}'.format(dir_jpg)) if args.verbose else None
+        shutil.rmtree(dir_jpg)
+    try:
+        print('Create new folder and copy files to {}'.format(dir_jpg)) if args.verbose else None
+        shutil.copytree(dir_tmp, dir_jpg)
+    except Exception as e:
+        # cleanup and terminate
+        shutil.rmtree(dir_tmp)
+        sys.exit('Could not copy intermediate jpg files. {}'.format(e))
 
 # remove tmp directory
 shutil.rmtree(dir_tmp)
@@ -127,7 +150,7 @@ shutil.rmtree(dir_tmp)
 # check if file was created
 if os.path.isfile(output_path):
     if args.verbose:
-        print 'Your file has been successfully created at {}'.format(output_path)
+        print('Your file has been successfully created at {}'.format(output_path))
 
     sys.exit(0)
 else:
