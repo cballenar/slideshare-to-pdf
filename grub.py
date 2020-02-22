@@ -7,6 +7,12 @@ import lxml
 import errno
 import socket
 import shutil
+import six
+if six.PY2:
+    from urllib import urlretrieve as urllib_urlretrieve
+else:
+    from urllib.request import urlretrieve as urllib_urlretrieve
+    raw_input = input
 import urllib
 import argparse
 import requests
@@ -105,7 +111,7 @@ for i, image in enumerate(images, start=1):
         print('Downloading slide {}...'.format(str(i)))
 
     try:
-        urllib.urlretrieve(remote_slide, filename=local_slide)
+        urllib_urlretrieve(remote_slide, filename=local_slide)
     except Exception as e:
         # cleanup and terminate
         shutil.rmtree(dir_tmp)
