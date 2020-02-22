@@ -7,6 +7,12 @@ import lxml
 import errno
 import socket
 import shutil
+import six
+if six.PY2:
+    from urllib import urlretrieve as urllib_urlretrieve
+else:
+    from urllib.request import urlretrieve as urllib_urlretrieve
+    raw_input = input
 import urllib
 import argparse
 import requests
@@ -74,7 +80,7 @@ images = None
 try:
     html = requests.get(url)
     html.raise_for_status()
-except Exception, e:
+except Exception as e:
     # terminate script
     sys.exit('Could not download {}. {}'.format(url, e))
 else:
@@ -105,8 +111,8 @@ for i, image in enumerate(images, start=1):
         print('Downloading slide {}...'.format(str(i)))
 
     try:
-        urllib.urlretrieve(remote_slide, filename=local_slide)
-    except Exception, e:
+        urllib_urlretrieve(remote_slide, filename=local_slide)
+    except Exception as e:
         # cleanup and terminate
         shutil.rmtree(dir_tmp)
         sys.exit('Could not download slide-{}. {}'.format(str(i), e))
@@ -127,7 +133,7 @@ try:
             imagick = 'magick'
             print('\'magick\' is to be used. If \'convert\' is correct one, please set --use_convert') if args.verbose else None
     subprocess.call('{} {} -quality 100 {}'.format(imagick, downloaded_slides_str,  output_path), shell=True)
-except Exception, e:
+except Exception as e:
     sys.exit('Could not convert slides to PDF. {}'.format(e))
 
 # copy jpg files if requested

@@ -15,9 +15,27 @@ They can be installed by running:
 
 ````
 apt-get update
-apt-get install -y imagemagick python-bs4 python-lxml
+apt-get install -y imagemagick 
+pip install bs4 lxml six requests
 ````
 
+On Windows, [Windows Binary of ImageMagick](https://imagemagick.org/script/download.php#windows) can be used.
+ImageMagick must be added to PATH.
+Please check if ImageMagick `magick` command can be executed or not using Command Prompt.
+
+```
+> magick -help
+Usage: magick tool [ {option} | {image} ... ] {output_image}
+```
+Remark:
+If this script can't find out ImageMagick `magick` command, it will try to use ImageMagick `convert` command.
+However, Windows built-in `convert` command(`C:\Windows\System32\convert.exe`) hides it.
+
+The rest of packages can be installed via pip.
+
+````
+pip install bs4 lxml six requests
+````
 
 ## Usage
 
